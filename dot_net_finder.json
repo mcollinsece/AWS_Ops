@@ -9,8 +9,10 @@
         "runCommand": [
           "if (Test-Path 'C:\\Program Files\\dotnet\\shared') {",
           "    Get-ChildItem -Path 'C:\\Program Files\\dotnet\\shared' -Directory | ForEach-Object {",
-          "        $_.Name",
-          "        Get-ChildItem -Path $_.FullName -Directory | ForEach-Object { $_.Name }",
+          "        $baseDir = $_.FullName",
+          "        Get-ChildItem -Path $baseDir -Directory | ForEach-Object {",
+          "            Write-Output \"$($baseDir)\\$($_.Name)\"",
+          "        }",
           "    }",
           "} else {",
           "    Write-Output '.NET shared directory does not exist.'",
