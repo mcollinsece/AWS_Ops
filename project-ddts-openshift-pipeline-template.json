@@ -1,50 +1,51 @@
 {
-    "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "CloudFormation template to create an S3 bucket with specific folders",
-    "Resources": {
-      "S3Bucket": {
-        "Type": "AWS::S3::Bucket",
-        "Properties": {
-          "BucketName": "spd-ddts-vapo-lower"
-        }
-      },
-      "InboxFolder": {
-        "Type": "AWS::S3::BucketPolicy",
-        "Properties": {
-          "Bucket": {
-            "Ref": "S3Bucket"
-          },
-          "PolicyDocument": {
-            "Statement": [
-              {
-                "Effect": "Allow",
-                "Action": [
-                  "s3:PutObject"
-                ],
-                "Resource": [
-                  {
-                    "Fn::Sub": "arn:aws:s3:::spd-ddts-vapo-lower/inbox/"
-                  },
-                  {
-                    "Fn::Sub": "arn:aws:s3:::spd-ddts-vapo-lower/inbox/dev/"
-                  },
-                  {
-                    "Fn::Sub": "arn:aws:s3:::spd-ddts-vapo-lower/inbox/preprod/"
-                  }
-                ]
-              }
-            ]
-          }
-        }
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Example role, policy and instance profile for project admin using IAM boundary. Template used for SPD",
+  "Resources": {
+    "rS3Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "spd-ddts-vapo-lower"
       }
     },
-    "Outputs": {
-      "S3BucketName": {
-        "Description": "Name of the S3 bucket",
-        "Value": {
-          "Ref": "S3Bucket"
+    "rPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "rS3Bucket"
+        },
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "AllowS3LimitedAccess",
+              "Effect": "Allow",
+              "Action": [
+                "s3:*"
+              ],
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:s3:::spd-ddts-vapo-lower/inbox/*"
+                },
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:s3:::spd-ddts-vapo-lower/inbox/dev/*"
+                },
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:s3:::spd-ddts-vapo-lower/inbox/preprod/*"
+                }
+              ]
+            }
+          ]
         }
       }
     }
+  },
+  "Outputs": {
+    "S3BucketName": {
+      "Description": "Name of the S3 bucket",
+      "Value": {
+        "Ref": "rS3Bucket"
+      }
+    }
   }
-  
+}
